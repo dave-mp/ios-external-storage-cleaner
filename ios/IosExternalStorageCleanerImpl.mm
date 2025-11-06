@@ -2,7 +2,7 @@
 
 @implementation IosExternalStorageCleaner
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(IosExternalStorageCleaner)
 
 - (NSNumber *)multiply:(double)a b:(double)b {
     NSNumber *result = @(a * b);
