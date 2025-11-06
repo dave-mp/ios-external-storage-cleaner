@@ -4,17 +4,7 @@
 
 RCT_EXPORT_MODULE(IosExternalStorageCleaner)
 
-// Example method for both old and new architecture
-RCT_EXPORT_METHOD(multiply:(double)a
-                  b:(double)b
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    NSNumber *result = @(a * b);
-    resolve(result);
-}
-
-// Synchronous method for new architecture
+// Synchronous method - works for both old and new architecture
 - (NSNumber *)multiply:(double)a b:(double)b {
     NSNumber *result = @(a * b);
     return result;
