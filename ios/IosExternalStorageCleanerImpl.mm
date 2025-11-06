@@ -4,6 +4,17 @@
 
 RCT_EXPORT_MODULE(IosExternalStorageCleaner)
 
+// Example method for both old and new architecture
+RCT_EXPORT_METHOD(multiply:(double)a
+                  b:(double)b
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSNumber *result = @(a * b);
+    resolve(result);
+}
+
+// Synchronous method for new architecture
 - (NSNumber *)multiply:(double)a b:(double)b {
     NSNumber *result = @(a * b);
     return result;
@@ -16,6 +27,12 @@ RCT_EXPORT_MODULE(IosExternalStorageCleaner)
     return std::make_shared<facebook::react::NativeIosExternalStorageCleanerSpecJSI>(params);
 }
 #endif
+
+// Tell React Native this is a turbo module
++ (BOOL)requiresMainQueueSetup
+{
+    return NO;
+}
 
 @end
 

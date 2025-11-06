@@ -1,13 +1,12 @@
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <IosExternalStorageCleaner/IosExternalStorageCleaner.h>
-
-@interface IosExternalStorageCleaner : NativeIosExternalStorageCleanerSpecBase <NativeIosExternalStorageCleanerSpec>
-@end
-
-#else
 #import <React/RCTBridgeModule.h>
 
-@interface IosExternalStorageCleaner : NSObject <RCTBridgeModule>
-@end
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <IosExternalStorageCleaner/IosExternalStorageCleaner.h>
+#import <ReactCommon/RCTTurboModule.h>
 
+@interface IosExternalStorageCleaner : NativeIosExternalStorageCleanerSpecBase <NativeIosExternalStorageCleanerSpec, RCTTurboModule>
+#else
+@interface IosExternalStorageCleaner : NSObject <RCTBridgeModule>
 #endif
+
+@end
