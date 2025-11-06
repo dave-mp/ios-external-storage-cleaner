@@ -1,6 +1,6 @@
 {
   "name": "react-native-ios-external-storage-cleaner",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Allows wiping out SD or USB drives from ReactNative applications on iOS",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
