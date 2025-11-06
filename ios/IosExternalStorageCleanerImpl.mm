@@ -1,4 +1,4 @@
-#import "IosExternalStorageCleaner.h"
+#import "IosExternalStorageCleanerImpl.h"
 
 @implementation IosExternalStorageCleaner
 
