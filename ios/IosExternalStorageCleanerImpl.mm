@@ -116,58 +116,33 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
         }
         
         NSFileManager *fm = [NSFileManager defaultManager];
-        NSSet<NSString *> *nukeNames = [NSSet setWithArray:@[
-            @".Trashes", @".trashes", @".Trash", @".Trash-1000",
-            @".Spotlight-V100", @".fseventsd", @".DS_Store"
-        ]];
+        NSMutableArray<NSString *> *deletedFiles = [NSMutableArray array];
         
-        NSInteger deletedCount = 0;
-        NSMutableArray *errors = [NSMutableArray array];
+        // Get all contents of the directory (including hidden files)
+        NSError *contentsError = nil;
+        NSArray<NSURL *> *contents = [fm contentsOfDirectoryAtURL:rootURL
+                                       includingPropertiesForKeys:nil
+                                                          options:0
+                                                            error:&contentsError];
         
-        // Enumerate files
-        NSDirectoryEnumerator *enumerator = [fm enumeratorAtURL:rootURL
-                                    includingPropertiesForKeys:nil
-                                                       options:0
-                                                  errorHandler:^BOOL(NSURL *url, NSError *error) {
-            [errors addObject:@{
-                @"path": url.path,
-                @"error": error.localizedDescription ?: @"Unknown error"
-            }];
-            return YES; // Continue enumeration
-        }];
-        
-        for (NSURL *fileURL in enumerator) {
-            NSString *fileName = fileURL.lastPathComponent;
-            
-            // Check if file should be deleted
-            if ([nukeNames containsObject:fileName] || [fileName hasPrefix:@"._"]) {
-                NSError *deleteError = nil;
-                if ([fm removeItemAtURL:fileURL error:&deleteError]) {
-                    deletedCount++;
-                } else {
-                    [errors addObject:@{
-                        @"path": fileURL.path,
-                        @"error": deleteError.localizedDescription ?: @"Failed to delete"
-                    }];
-                }
-            }
+        if (contentsError) {
+            reject(@"READ_ERROR", @"Failed to read directory contents", contentsError);
+            return;
         }
         
-        // Attempt to remove the directories themselves if still present
-        for (NSString *dirName in nukeNames) {
-            NSURL *dirURL = [rootURL URLByAppendingPathComponent:dirName isDirectory:YES];
-            if ([fm fileExistsAtPath:dirURL.path]) {
-                NSError *deleteError = nil;
-                if ([fm removeItemAtURL:dirURL error:&deleteError]) {
-                    deletedCount++;
-                }
-                // Silently ignore errors for directory deletion
+        // Delete each item in the directory
+        for (NSURL *itemURL in contents) {
+            NSError *deleteError = nil;
+            NSString *relativePath = [itemURL lastPathComponent];
+            
+            if ([fm removeItemAtURL:itemURL error:&deleteError]) {
+                [deletedFiles addObject:relativePath];
             }
+            // Silently skip items that couldn't be deleted
         }
         
         resolve(@{
-            @"deleted": @(deletedCount),
-            @"errors": errors,
+            @"deletedFiles": deletedFiles,
             @"stale": @(NO)  // Not using bookmarks, so never stale
         });
     });

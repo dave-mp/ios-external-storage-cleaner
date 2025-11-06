@@ -6,8 +6,7 @@ export type FolderPickResult = {
 };
 
 export type CleanResult = {
-  deleted: number;
-  errors: Array<{ path: string; error: string }>;
+  deletedFiles: Array<string>;
   stale: boolean;
 };
 

@@ -46,11 +46,9 @@ export default function App() {
       const result = await cleanWithBookmark(folderInfo.bookmarkBase64);
       setCleanResult(result);
 
-      const message = `Deleted ${result.deleted} items\n${
-        result.errors.length > 0
-          ? `${result.errors.length} errors occurred`
-          : 'No errors'
-      }${result.stale ? '\n⚠️ Bookmark is stale' : ''}`;
+      const message = `Deleted ${result.deletedFiles.length} items${
+        result.stale ? '\n⚠️ Bookmark is stale' : ''
+      }`;
 
       Alert.alert('Cleaning Complete', message);
     } catch (error: any) {
@@ -64,7 +62,7 @@ export default function App() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>iOS External Storage Cleaner</Text>
       <Text style={styles.subtitle}>
-        Clean system files from SD cards and USB drives
+        Delete ALL files from SD cards and USB drives
       </Text>
 
       <View style={styles.buttonContainer}>
@@ -95,40 +93,36 @@ export default function App() {
         <View style={styles.resultBox}>
           <Text style={styles.resultTitle}>Cleaning Results:</Text>
           <Text style={styles.resultText}>
-            ✅ Deleted: {cleanResult.deleted} items
-          </Text>
-          <Text style={styles.resultText}>
-            ❌ Errors: {cleanResult.errors.length}
+            ✅ Deleted: {cleanResult.deletedFiles.length} items
           </Text>
           {cleanResult.stale && (
             <Text style={styles.warningText}>⚠️ Bookmark is stale</Text>
           )}
 
-          {cleanResult.errors.length > 0 && (
-            <View style={styles.errorsContainer}>
-              <Text style={styles.errorTitle}>Errors:</Text>
-              {cleanResult.errors.slice(0, 5).map((err, idx) => (
-                <Text key={idx} style={styles.errorText}>
-                  {err.path}: {err.error}
+          {cleanResult.deletedFiles.length > 0 && (
+            <ScrollView style={styles.filesContainer}>
+              <Text style={styles.filesTitle}>Deleted Files:</Text>
+              {cleanResult.deletedFiles.slice(0, 20).map((file, idx) => (
+                <Text key={idx} style={styles.fileText}>
+                  • {file}
                 </Text>
               ))}
-              {cleanResult.errors.length > 5 && (
-                <Text style={styles.errorText}>
-                  ... and {cleanResult.errors.length - 5} more
+              {cleanResult.deletedFiles.length > 20 && (
+                <Text style={styles.fileText}>
+                  ... and {cleanResult.deletedFiles.length - 20} more
                 </Text>
               )}
-            </View>
+            </ScrollView>
           )}
         </View>
       )}
 
       <View style={styles.infoBox}>
-        <Text style={styles.helpTitle}>What gets cleaned:</Text>
-        <Text style={styles.helpText}>• .Trashes, .Trash folders</Text>
-        <Text style={styles.helpText}>• .Spotlight-V100 (Spotlight index)</Text>
-        <Text style={styles.helpText}>• .fseventsd (File system events)</Text>
-        <Text style={styles.helpText}>• .DS_Store files</Text>
-        <Text style={styles.helpText}>• ._* (resource fork files)</Text>
+        <Text style={styles.helpTitle}>⚠️ Warning:</Text>
+        <Text style={styles.helpText}>
+          This will delete ALL files and folders in the selected directory,
+          including hidden files. This action cannot be undone!
+        </Text>
       </View>
     </ScrollView>
   );
@@ -202,19 +196,20 @@ const styles = StyleSheet.create({
     color: '#FF9800',
     fontWeight: '600',
   },
-  errorsContainer: {
+  filesContainer: {
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: '#DDD',
+    maxHeight: 200,
   },
-  errorTitle: {
+  filesTitle: {
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 5,
-    color: '#D32F2F',
+    color: '#2E7D32',
   },
-  errorText: {
+  fileText: {
     fontSize: 12,
     color: '#666',
     marginVertical: 2,

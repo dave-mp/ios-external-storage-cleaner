@@ -19,11 +19,11 @@ export function pickFolder(): Promise<FolderPickResult> {
 }
 
 /**
- * Cleans system files and hidden files from the external storage using a previously saved bookmark.
- * Removes: .Trashes, .Spotlight-V100, .fseventsd, .DS_Store, and ._* files
+ * Deletes ALL files and folders from the selected external storage.
+ * WARNING: This will delete everything in the selected folder, including all hidden files.
  *
  * @param bookmarkBase64 - The base64-encoded bookmark from pickFolder()
- * @returns Promise with number of deleted items, errors, and whether bookmark is stale
+ * @returns Promise with array of deleted file names and whether bookmark is stale
  */
 export function cleanWithBookmark(
   bookmarkBase64: string

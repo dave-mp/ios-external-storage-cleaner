@@ -1,13 +1,8 @@
 # react-native-ios-external-storage-cleaner
 
-Clean system files and hidden files from external storage devices (SD cards, USB drives) on iOS.
+Delete all files and folders from external storage devices (SD cards, USB drives) on iOS.
 
-This library removes macOS-specific system files that can clutter external storage when used with iOS devices:
-- `.DS_Store` files
-- `.Trashes` folders
-- `.Spotlight-V100` indexes
-- `.fseventsd` folders
-- `._*` AppleDouble files
+⚠️ **Warning:** This library will delete **ALL** files and folders in the selected directory, including hidden files. Use with caution!
 
 ## Installation
 
@@ -48,16 +43,17 @@ async function selectExternalStorage() {
   }
 }
 
-// Step 2: Clean the files using the bookmark
+// Step 2: Delete all files using the bookmark
 async function cleanExternalStorage(bookmarkBase64: string) {
   try {
     const result: CleanResult = await cleanWithBookmark(bookmarkBase64);
-    console.log(`Deleted ${result.deleted} items`);
+    console.log(`Deleted ${result.deletedFiles.length} items`);
     
-    if (result.errors.length > 0) {
-      console.log('Errors encountered:');
-      result.errors.forEach(err => {
-        console.log(`- ${err.path}: ${err.error}`);
+    // Show what was deleted
+    if (result.deletedFiles.length > 0) {
+      console.log('Deleted files:');
+      result.deletedFiles.forEach(file => {
+        console.log(`- ${file}`);
       });
     }
     
@@ -101,7 +97,7 @@ type FolderPickResult = {
 
 ### `cleanWithBookmark(bookmarkBase64: string)`
 
-Cleans system files and hidden files from the previously selected folder.
+⚠️ **Deletes ALL files and folders from the previously selected directory.**
 
 **Parameters:**
 - `bookmarkBase64` - The base64-encoded bookmark from `pickFolder()`
@@ -110,21 +106,20 @@ Cleans system files and hidden files from the previously selected folder.
 
 ```typescript
 type CleanResult = {
-  deleted: number;                              // Number of items successfully deleted
-  errors: Array<{ path: string; error: string }>; // Any errors encountered
-  stale: boolean;                               // Whether the bookmark is stale
+  deletedFiles: Array<string>;  // Array of file/folder names that were deleted
+  stale: boolean;               // Whether the bookmark is stale
 };
 ```
 
-**Files removed:**
-- `.Trashes`, `.trashes`, `.Trash`, `.Trash-1000`
-- `.Spotlight-V100`
-- `.fseventsd`
-- `.DS_Store`
-- All files starting with `._` (AppleDouble files)
+**Behavior:**
+- Deletes **everything** in the selected folder (files and subdirectories)
+- Includes all hidden files (files starting with `.`)
+- Only returns successfully deleted items
+- Items that fail to delete are silently skipped
 
 **Throws:**
 - `NO_URL`: No folder has been selected yet
+- `READ_ERROR`: Failed to read directory contents
 
 
 ## Contributing
