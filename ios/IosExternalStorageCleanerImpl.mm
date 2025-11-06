@@ -4,13 +4,20 @@
 
 RCT_EXPORT_MODULE(IosExternalStorageCleaner)
 
-// Synchronous method - works for both old and new architecture
+// Synchronous method implementation for both architectures
 - (NSNumber *)multiply:(double)a b:(double)b {
     NSNumber *result = @(a * b);
     return result;
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
+#ifndef RCT_NEW_ARCH_ENABLED
+// For old architecture, export the method as synchronous
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, multiply:(double)a b:(double)b)
+{
+    return [self multiply:a b:b];
+}
+#else
+// For new architecture, provide getTurboModule
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
@@ -18,7 +25,6 @@ RCT_EXPORT_MODULE(IosExternalStorageCleaner)
 }
 #endif
 
-// Tell React Native this is a turbo module
 + (BOOL)requiresMainQueueSetup
 {
     return NO;
