@@ -25,7 +25,7 @@ export default function App() {
       const result = await pickFolder();
       setFolderInfo(result);
       setCleanResult(null);
-      Alert.alert('Success', `Selected: ${result.folderPath}`);
+      Alert.alert('Success', `Selected: ${result.folderName}`);
     } catch (error: any) {
       if (error.code !== 'CANCELLED') {
         Alert.alert('Error', error.message || 'Failed to pick folder');
@@ -76,7 +76,8 @@ export default function App() {
       {folderInfo && (
         <View style={styles.infoBox}>
           <Text style={styles.infoTitle}>Selected Folder:</Text>
-          <Text style={styles.infoText}>{folderInfo.folderPath}</Text>
+          <Text style={styles.infoText}>{folderInfo.folderName}</Text>
+          <Text style={styles.infoSubtext}>{folderInfo.folderPath}</Text>
 
           <View style={styles.buttonContainer}>
             <Button
@@ -169,8 +170,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#333',
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  infoSubtext: {
+    fontSize: 12,
+    color: '#666',
     marginBottom: 10,
   },
   resultBox: {

@@ -89,6 +89,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     if (self.pickerResolver) {
         self.pickerResolver(@{
             @"folderPath": url.path,
+            @"folderName": url.lastPathComponent ?: @"",
             @"bookmarkBase64": base64
         });
     }

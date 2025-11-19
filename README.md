@@ -29,7 +29,8 @@ import {
 async function selectExternalStorage() {
   try {
     const result: FolderPickResult = await pickFolder();
-    console.log('Selected folder:', result.folderPath);
+    console.log('Selected folder:', result.folderName);
+    console.log('Full path:', result.folderPath);
     console.log('Bookmark:', result.bookmarkBase64);
     
     // Save the bookmark for later use
@@ -84,7 +85,8 @@ Opens a folder picker to let the user select an external storage device.
 
 ```typescript
 type FolderPickResult = {
-  folderPath: string;      // Path to the selected folder
+  folderPath: string;      // Full path to the selected folder
+  folderName: string;      // Name of the selected folder (e.g., "MyDrive")
   bookmarkBase64: string;  // Security-scoped bookmark for future access
 };
 ```

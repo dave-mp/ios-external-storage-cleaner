@@ -2,6 +2,7 @@ import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 export type FolderPickResult = {
   folderPath: string;
+  folderName: string;
   bookmarkBase64: string;
 };
 
