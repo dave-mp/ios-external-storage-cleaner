@@ -81,6 +81,23 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     // Store the URL for later use
     self.securedURL = url;
     
+    // Try to get the user-friendly name (volume name or localized name)
+    NSString *folderName = nil;
+    NSError *nameError = nil;
+    
+    // First try to get the volume name (for external drives)
+    [url getResourceValue:&folderName forKey:NSURLVolumeNameKey error:&nameError];
+    
+    // If volume name is not available, try localized name
+    if (!folderName || [folderName length] == 0) {
+        [url getResourceValue:&folderName forKey:NSURLLocalizedNameKey error:nil];
+    }
+    
+    // Fallback to last path component if nothing else works
+    if (!folderName || [folderName length] == 0) {
+        folderName = url.lastPathComponent;
+    }
+    
     // Return the path and URL as base64 (for identification purposes)
     NSString *urlString = url.absoluteString;
     NSData *urlData = [urlString dataUsingEncoding:NSUTF8StringEncoding];
@@ -89,7 +106,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     if (self.pickerResolver) {
         self.pickerResolver(@{
             @"folderPath": url.path,
-            @"folderName": url.lastPathComponent ?: @"",
+            @"folderName": folderName ?: @"",
             @"bookmarkBase64": base64
         });
     }
